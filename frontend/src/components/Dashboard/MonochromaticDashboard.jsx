@@ -11,7 +11,12 @@ import {
   ChevronDown,
   LogOut,
   UserPlus,
-  CreditCard
+  CreditCard,
+  List,
+  Contact,
+  Package,
+  Calculator,
+  BarChart3
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import DashboardStats from './DashboardStats';
@@ -19,6 +24,7 @@ import SalesChart from './SalesChart';
 import RecentTransactions from './RecentTransactions';
 import ClientPortal from './ClientPortal';
 import CreateUser from '../admin/CreateUser';
+import ContactMaster from '../contacts/ContactMaster';
 import {
   mockSalesData,
   mockTransactions,
@@ -31,6 +37,7 @@ const MonochromaticDashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [dateRange, setDateRange] = useState('30d');
   const [showCreateUser, setShowCreateUser] = useState(false);
+  const [showContactMaster, setShowContactMaster] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [activeQuickAction, setActiveQuickAction] = useState(null);
 
@@ -67,6 +74,19 @@ const MonochromaticDashboard = () => {
     } catch (error) {
       console.error('CreateUser error:', error);
       setShowCreateUser(false);
+    }
+  }
+
+  // If showing contact master page
+  if (showContactMaster) {
+    try {
+      return <ContactMaster 
+        onBack={() => setShowContactMaster(false)} 
+        onHome={() => setShowContactMaster(false)}
+      />;
+    } catch (error) {
+      console.error('ContactMaster error:', error);
+      setShowContactMaster(false);
     }
   }
 
@@ -121,15 +141,17 @@ const MonochromaticDashboard = () => {
     switch (user?.role) {
       case 'admin':
         return [
-          { id: 'create-user', label: 'Create User', icon: UserPlus, color: 'var(--primary)' },
-          { id: 'view-reports', label: 'View Reports', icon: TrendingUp, color: 'var(--success)' },
-          { id: 'settings', label: 'Settings', icon: Settings, color: 'var(--warning)' }
+          { id: 'contact-master', label: 'Contact Master', icon: Contact, color: 'var(--success)' },
+          { id: 'product-master', label: 'Product Master', icon: Package, color: 'var(--info)' },
+          { id: 'taxes-master', label: 'Taxes Master', icon: Calculator, color: 'var(--warning)' },
+          { id: 'chart-accounts', label: 'Chart of Accountants', icon: BarChart3, color: 'var(--error)' }
         ];
       case 'accountant':
         return [
-          { id: 'create-invoice', label: 'Create Invoice', icon: DollarSign, color: 'var(--primary)' },
-          { id: 'view-payments', label: 'View Payments', icon: CreditCard, color: 'var(--success)' },
-          { id: 'reports', label: 'Reports', icon: TrendingUp, color: 'var(--info)' }
+          { id: 'contact-master', label: 'Contact Master', icon: Contact, color: 'var(--success)' },
+          { id: 'product-master', label: 'Product Master', icon: Package, color: 'var(--info)' },
+          { id: 'taxes-master', label: 'Taxes Master', icon: Calculator, color: 'var(--warning)' },
+          { id: 'chart-accounts', label: 'Chart of Accountants', icon: BarChart3, color: 'var(--error)' }
         ];
       default:
         return [];
@@ -359,7 +381,7 @@ const MonochromaticDashboard = () => {
             <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
               Quick Actions
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {getQuickActions().map((action, index) => {
                 const ActionIcon = action.icon;
                 return (
@@ -379,6 +401,7 @@ const MonochromaticDashboard = () => {
                     onMouseLeave={() => setActiveQuickAction(null)}
                     onClick={() => {
                       if (action.id === 'create-user') setShowCreateUser(true);
+                      if (action.id === 'contact-master') setShowContactMaster(true);
                     }}
                   >
                     <motion.div
